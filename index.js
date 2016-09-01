@@ -16,11 +16,17 @@ exports.handler = function(event, context, callback) {
 	alexa.registerHandlers(handlers);
 
 	ssh.on("close", function () {alexa.execute()});
-	ssh.exec('touch /home/username/testing', {out: function(stdout) {console.log(stdout);}}).start();	
+	ssh
+        .exec('nohup /home/username/script.sh > /dev/null 2>&1 &', {  // Nohup runs script in BG, > /dev/null redirects output. & also runs in BG. Trying to keep things fast to make alexa response time good.
+            out: console.log.bind(console)
+        })
+        .exec('exit', {                                               // Also for trying to keep things fast.
+            out: console.log.bind(console)
+        }).start();	
 };
 
 var handlers = {
     'LaunchRequest': function(){
-		this.emit(':tell', 'SSH Command Sent.'); 
+		this.emit(':tell', 'Now opening the garage door.'); 
     }
 };
